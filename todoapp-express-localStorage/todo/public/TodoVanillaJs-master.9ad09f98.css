@@ -1,0 +1,240 @@
+html {
+  font-size: 62.5%;
+}
+
+*,
+*::after,
+*::before {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.header .additem-input {
+  flex: 1 1 100%;
+  max-width: 50rem;
+  border: 0.4rem solid teal;
+  padding: 1rem;
+  font-size: 2.4rem;
+  font-family: "Roboto", sans-serif;
+  box-shadow: -1px -1px 13px -5px rgba(0, 0, 0, 0.64);
+}
+
+.header__title {
+  font-family: "Ubuntu", sans-serif;
+  font-size: 8rem;
+  flex: 1 1 100%;
+  text-align: center;
+  color: teal;
+  margin-bottom: 1.4rem;
+}
+
+main {
+  max-width: 960px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.list-container {
+  padding: 0 0.3rem;
+}
+
+.list {
+  list-style-type: none;
+  display: flex;
+  font-size: 2.4rem;
+  justify-content: space-between;
+  align-items: center;
+  border: 0.4rem solid teal;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.list__task {
+  font-family: "Roboto", sans-serif;
+}
+
+.list__task {
+  flex: 1 1 auto;
+  word-break: break-all;
+  transition: opacity 0.3s ease-out;
+}
+
+.list__checkbox {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 100%;
+  border: 0.2rem solid black;
+  position: relative;
+  margin-right: 1.5rem;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.list__tick {
+  position: absolute;
+  top: 14%;
+  left: 18%;
+  width: 0.5rem;
+  height: 0.5rem;
+  color: green;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.list__deleteButton {
+  font-size: 3.8rem;
+  color: red;
+  opacity: 0.6;
+  flex-shrink: 0;
+  cursor: pointer;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.list__edit {
+  flex: 1 1 auto;
+  border: 0.2rem solid black;
+  font-family: "Roboto", sans-serif;
+  font-size: 2.4rem;
+  padding: 1rem;
+}
+@media screen and (max-width: 400px) {
+  .list__edit {
+    flex: 0 1 60%;
+    max-width: 330px;
+  }
+}
+
+.note {
+  margin-right: 4rem;
+  cursor: pointer;
+  width: 4rem;
+  height: 4rem;
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2.9rem;
+  border-radius: 100%;
+  border: 0.2rem solid green;
+  user-select: none;
+  -webkit-touch-callout: none;
+  color: green;
+}
+
+@media screen and (max-width: 600px) {
+  .note {
+    margin-left: 0.5rem;
+  }
+}
+
+/* .list:hover .list__deleteButton.hide {
+  display: none;
+} */
+
+.filter {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1.2rem;
+}
+
+.filter__item {
+  font-size: 2.4rem;
+  padding: 1rem;
+  margin-right: 1rem;
+  border: 2px solid teal;
+  cursor: pointer;
+  font-family: "Roboto", sans-serif;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.modal {
+  position: fixed;
+  width: 400px;
+  min-height: 300px;
+  max-height: 90vh;
+  background-color: #fff;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 100;
+  overflow: auto;
+  border-radius: 4px;
+  border: 3px solid rgb(0, 128, 128);
+}
+
+.modal__textarea {
+  width: 85%;
+  max-width: 500px;
+  height: 200px;
+  font-size: 2.4rem;
+  font-family: "Roboto", sans-serif;
+  margin: 1rem auto;
+  display: block;
+  resize: none;
+  /* white-space: pre-wrap; */
+}
+
+.modal__text {
+  width: 90%;
+  word-break: break-all;
+  font-size: 2.4rem;
+  font-family: "Roboto", sans-serif;
+  color: black;
+  margin: 1rem auto;
+  white-space: pre-wrap;
+}
+
+.modal__button {
+  font-family: "Lato", sans-serif;
+  display: block;
+  font-size: 2rem;
+  cursor: pointer;
+  border-radius: 10rem;
+  padding: 1rem 1.5rem;
+  background-color: green;
+  color: white;
+  border: none;
+  margin: 0 auto;
+  margin-bottom: 1rem;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 50;
+  background-color: rgba(0, 0, 0, 0.6);
+}
+
+.hide {
+  display: none;
+}
+
+.taskdone {
+  opacity: 0.3;
+  text-decoration: line-through;
+}
+
+.tabstyle {
+  background-color: rgb(0, 128, 128);
+  color: white;
+  border: none;
+}
+
+
+/*# sourceMappingURL=/TodoVanillaJs-master.9ad09f98.css.map */
