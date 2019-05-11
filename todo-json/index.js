@@ -25,22 +25,26 @@ const appendMultipleChild = (...args) => {
 }
 
 const onCheckBoxClick = e => {
-  let taskCheckBox = e.currentTarget
-  let taskList = taskCheckBox.parentNode
-  let taskPara = taskCheckBox.nextElementSibling
-  let taskTickButton = taskCheckBox.querySelector('.list__tick')
-  if (taskCheckBox.dataset.checked === 'true') {
-    taskCheckBox.dataset.checked = 'false' // active task
-    editFromServer({id:taskList.id, checked: 'false'})
-    if (tabActiveContent === 'Completed') filter(null, 'Completed', true)
+  let taskCheckBox = e.currentTarget;
+  let taskList = taskCheckBox.parentNode;
+  let taskPara = taskCheckBox.nextElementSibling;
+  let taskTickButton = taskCheckBox.querySelector(".list__tick");
+  if (taskCheckBox.dataset.checked === "true") {
+    editDataInServer([taskList.id, "checked", "false"]).then(() => {
+      taskCheckBox.dataset.checked = "false"; // active task
+      if (tabActiveContent === "Completed") filter(null, "Completed", true);
+      taskPara.classList.toggle("taskdone");
+      taskTickButton.classList.toggle("hide");
+    });
   } else {
-    taskCheckBox.dataset.checked = 'true'
-    editFromServer({id: taskList.id, checked: 'true'})
-    if (tabActiveContent === 'Active') filter(null, 'Active', true)
+    editDataInServer([taskList.id, "checked", "true"]).then(() => {
+      taskCheckBox.dataset.checked = "true";
+      if (tabActiveContent === "Active") filter(null, "Active", true);
+      taskPara.classList.toggle("taskdone");
+      taskTickButton.classList.toggle("hide");
+    });
   }
-  taskPara.classList.toggle('taskdone')
-  taskTickButton.classList.toggle('hide')
-}
+};
 
 const filter = (e, text, artificialClick = false) => {
   let buttonContent = text || e.target.textContent
@@ -100,14 +104,17 @@ const saveHelper = (editInput, prevText, taskItem, flag) => {
   const taskDelete = taskItem.querySelector('.list__deleteButton')
   const taskPara = taskItem.querySelector('.list__task')
   const taskNoteButton = taskItem.querySelector('.note')
-  taskPara.innerText = editInput.value
-  if (flag === 1) taskPara.innerText = prevText
-  editFromServer({id:taskItem.id, text: taskPara.innerText})
-  taskPara.classList.toggle('hide')
-  taskDelete.classList.toggle('hide')
-  taskCheckBox.classList.toggle('hide')
-  taskNoteButton.classList.toggle('hide')
-  taskItem.removeChild(editInput)
+  let paraText = editInput.value
+  if (flag === 1) paraText = prevText;
+  editDataInServer([taskItem.id, 'text', paraText]).then(()=>{
+      taskPara.innerText = paraText;
+      taskPara.classList.toggle("hide");
+      taskDelete.classList.toggle("hide");
+      taskCheckBox.classList.toggle("hide");
+      taskNoteButton.classList.toggle("hide");
+      taskItem.removeChild(editInput);
+  })
+
 }
 
 const SaveAfterEdit = (e, prevText, editInput) => {
@@ -179,12 +186,19 @@ const saveNote = e => {
   const textAreaElement = modal.querySelector('.modal__textarea')
   const modalPara = modal.querySelector('.modal__text')
   if (textAreaElement.value.trim() === '') return
-  modalPara.textContent = textAreaElement.value
-  editFromServer({id:taskItem.id, note: modalPara.textContent})
-  textAreaElement.classList.add('hide')
-  saveButton.classList.add('hide')
-  modalPara.classList.remove('hide')
-  editButton.classList.remove('hide')
+  
+  editDataInServer([taskItem.id, "note", textAreaElement.value])
+    .then(() => {
+      modalPara.textContent = textAreaElement.value;
+      textAreaElement.classList.add("hide");
+      saveButton.classList.add("hide");
+      modalPara.classList.remove("hide");
+      editButton.classList.remove("hide");
+    })
+    .catch(e => {
+      alert("Could not edit note. Please retry");
+    });
+
 }
 
 const openNoteModal = e => {
@@ -283,13 +297,15 @@ const createTaskDeleteButton = taskItem => {
     class: 'list__deleteButton'
   })
   deleteButton.addEventListener('click', () => {
-    deleteFromServer(taskItem.id)
-    listContainer.removeChild(taskItem)
-
-    itemCount--
-    if (itemCount === 0) {
-      filterContainer.classList.add('hide')
-    }
+    deleteFromServer(taskItem.id).then(() => {
+      listContainer.removeChild(taskItem)
+      itemCount--
+      if (itemCount === 0) {
+        filterContainer.classList.add('hide')
+      }
+    }).catch((e)=> {
+      alert(`delete failed ${e}`)
+    })
   })
   return deleteButton
 }
@@ -325,10 +341,12 @@ const addTaskItem = e => {
   if (text.trim() === '') return
   addTaskItemInput.value = ''
   const taskObj = { text, checked: 'false', id: shortid.generate(), note: '' }
-  createTaskElement(taskObj)
-  addItemToServer(taskObj)
-  // item is added when completed tab is active
-  if (tabActiveContent === 'Completed') filter(null, 'Completed', true)
+
+  addItemToServer(taskObj).then(() => {
+    createTaskElement(taskObj)
+    // item is added when completed tab is active
+    if (tabActiveContent === 'Completed') filter(null, 'Completed', true)
+  }).catch((e) => alert(`add task failed with error ${e}`))
 }
 
 const removeModal = e => {
@@ -338,18 +356,18 @@ const removeModal = e => {
   overlay.classList.add('hide')
 }
 
-const editFromServer = (obj) => {
-  fetch("data/edit", {
-    method: "POST",
+const editDataInServer = arr => {
+  return fetch('data/edit', {
+    method: 'POST',
     headers: {
-      "Content-Type": "application/json"
+      'Content-Type': 'application/json'
     },
-    body: JSON.stringify(obj)
-  });
+    body: JSON.stringify(arr)
+  })
 }
 
 const addItemToServer = taskObj => {
-  fetch('/data/add', {
+  return fetch('/data/add', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -359,9 +377,8 @@ const addItemToServer = taskObj => {
 }
 
 const deleteFromServer = id => {
-  // console.log(JSON.stringify({id})
-  fetch('/data/delete', {
-    method: 'POST',
+  return fetch('/data/delete', {
+    method: 'DELETE',
     headers: {
       'Content-Type': 'application/json'
     },
@@ -369,15 +386,16 @@ const deleteFromServer = id => {
   })
 }
 
-const addItemsFromServer = () => {
-  fetch('/data').then(resp => resp.json()).then((file) => {
-    let data = file.data
-    console.log(data)
-    data.forEach(task => createTaskElement(task));
-  })
+const getDataFromServer = () => {
+  return fetch('/data')
 }
 
-addItemsFromServer()
+getDataFromServer()
+  .then(resp => resp.json())
+  .then(file => {
+    let data = file.data;
+    data.forEach(task => createTaskElement(task));
+  });
 
 overlay.addEventListener('click', removeModal)
 filterContainer.addEventListener('click', filter)
